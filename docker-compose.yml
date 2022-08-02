@@ -1,0 +1,99 @@
+version: '3'
+services:
+ da1:
+  image: tornode:v2
+  #expose:
+  #  - "7000"
+  #  - "9030"
+  environment:
+    ROLE: DA
+  volumes:
+    ## Needed to keep track of other nodes
+    - ./tor:/tor
+ da2:
+  image: tornode:v2
+  #expose:
+  #  - "7000"
+  #  - "9030"
+  environment:
+    ROLE: DA
+  volumes:
+    ## Needed to keep track of other nodes
+    - ./tor:/tor
+ da3:
+  image: tornode:v2
+  #expose:
+  #  - "7000"
+  #  - "9030"
+  environment:
+    ROLE: DA
+  volumes:
+    ## Needed to keep track of other nodes
+    - ./tor:/tor
+ relay:
+  image: tornode:v2
+  #expose:
+  #  - "7000"
+  #  - "9030"
+  environment:
+    ROLE: RELAY
+  volumes:
+    - ./tor:/tor
+  depends_on:
+    # Make sure the DA's are already up
+    - da1
+    - da2
+    - da3
+ exit:
+  image: tornode:v2
+  #expose:
+  #  - "7000"
+  #  - "9030"
+  environment:
+    ROLE: EXIT
+  volumes:
+    - ./tor:/tor
+  depends_on:
+    # Make sure the DA's are already up
+    - da1
+    - da2
+    - da3
+ client:
+  image: tornode:v2
+  ports:
+    # Setups a listener on host machine
+    - "9050:9050"
+    - "9051:9051"
+  volumes:
+    - ./tor:/tor
+  environment:
+    ROLE: CLIENT
+  depends_on: 
+    - da1
+    - da2
+    - da3
+ hs:
+  image: tornode:v2
+  #expose:
+  #  - "80"
+  environment:
+    ROLE: HS
+    # This will create a hidden service that points to
+    # the service "web" which is runing nginx. You can 
+    # change this to whatever ip or hostname you want
+    TOR_HS_PORT: "80"
+    TOR_HS_ADDR: "web"
+  volumes:
+    - ./tor:/tor
+  depends_on:
+    - da1
+    - da2
+    - da3
+  links:
+    - web
+ web:
+  image: nginx
+  #expose:
+  #  - "80"
+  
+
