@@ -4,6 +4,13 @@
 
 ### Quickstart
 
+Build a tornode image
+
+```
+cd private-tor-network
+docker build -t tornode .
+```
+
 The easiest way to get a tor network up and running is to use the docker-compose create and then scale function
 
 ```
@@ -11,40 +18,6 @@ docker-compose up --scale relay=3 --scale exit=3
 ```
 
 This will create 3 directory authorities (DA's), 1 client listning on port 9050, 3 relays, and 3 exits. You can scale to whatever you want. 
-
-### Uses
-
-If you're going "Why do I want this?" here's a few examples:
-
-**tor research**: learn how tor interacts with nodes, make modifications to settings and see what happens, understand how the Tor Network operates without affecting real people. Originally this project was part of a class I wrote to teach about how tor works.
-
-**tor development**: in the case you're working on a patch that is more complex and requires seeing what happens on the tor network, you can apply the patches to the containers.
-
-**traffic analysis**: Test out the latest tor exploit and pretend to be a nation state adversary.
-
-*If this needs to be said, this should never be used as a replacement for tor. This is for research purposes alone.*
-
-### Storage & Tor Network Configuration
-
-All of the required information that other nodes need to know about on the network are stored in a named volume `torvol` which you can find the path for doing `docker volume inspect privatetornetwork_torvol` or use `docker volume ls` to find its name on your system. 
-
-If you are running multiple instances or are rebuilding it, make sure you delete this named volume or you'll accidentally use a previous iteration's keys. Easiest way is:
-
-~~~
-docker-compose rm
-docker volume rm privatetornetwork_torvol
-~~~
-
-### Running Individual Roles
-
-You can manually build a tor network if you don't want to use docker-compose but you'll need to make sure you pass the correct DA fingerprints to each of the servers. Also make sure you create a user defined interface so that it doesn't try to use the default bridge. For example, this would make the first directory authority (DA)
-`docker run -e ROLE=DA --network tornet tornode:v1`
-
-Or setup a relay:
-`docker run -e ROLE=RELAY --network tornet tornode:v1`
-
-Watching the logs on a relay
-`docker logs -f {name of your container}`
 
 Available roles right now are:
 
