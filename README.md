@@ -1,5 +1,7 @@
 ## Private Tor Network on Docker
 
+## based on antitree/private-tor-network https://github.com/antitree/private-tor-network
+
 ##### An isolated, private tor network running entirely in Docker containers
 
 ### Quickstart
